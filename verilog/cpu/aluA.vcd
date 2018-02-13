@@ -1,0 +1,53 @@
+$date
+	Wed Feb 14 00:36:15 2018
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module tb_alu $end
+$scope module aluA $end
+$var wire 4 ! in1 [3:0] $end
+$var wire 4 " in2 [3:0] $end
+$var wire 4 # out [3:0] $end
+$var wire 1 $ carry $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+0$
+b0 #
+b0 "
+b0 !
+$end
+#1
+b1 #
+b1 !
+#2
+b10 #
+b10 !
+#3
+b11 #
+b1 "
+#4
+b111 #
+b101 "
+#5
+b1111 #
+b1010 !
+#6
+b0 #
+1$
+b1011 !
+#7
+b10 #
+b111 "
+#8
+b110 #
+b1111 !
+#9
+b1110 #
+b1111 "
