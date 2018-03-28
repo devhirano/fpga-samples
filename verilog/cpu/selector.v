@@ -1,5 +1,12 @@
 module selector(s0, s1, in1, in2, out1, out2);
 
+// input :  output
+// s1 s0
+//  0  0 -> 101[0] 110[0]
+//  0  1 -> 10[1]0 11[0]0
+//  1  0 -> 1[0]10 1[1]00
+//  1  1 -> [1]010 [1]100
+
 input s0, s1;
 input [3:0] in1, in2;
 output out1, out2;

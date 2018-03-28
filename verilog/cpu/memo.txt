@@ -1,0 +1,188 @@
+ただのめも
+
+input / output
+  ポートの方向を決定する
+
+wire
+  組み合わせ回路の信号線
+
+reg
+  値を保持する信号線
+
+
+- modules
+register A B
+register Zero
+register Input
+data_selector
+alu
+input_translator
+rom
+
+- module
+  - register A, B , output I/O
+# 74HC161
+# clk 立ち上がり時に load が有効なら a-d を保持
+# clk 立ち上がり時に保持した値を qa-qd に送信
+input load
+input clk
+input clr
+input a-d
+output qa-qd
+reg ia-id
+reg count
+# 両方Hでカウントアップ
+input enp
+input ent
+
+@always posedge
+  if not load
+  ‎  ia-id = a-d
+    qa-qd = ia-id
+  ‎
+@always
+  if enp and ent
+    unt += 1
+
+@always
+  if not clr
+  ‎  ia-id = 4'b0000
+  ‎  count = 0
+
+  - counter
+input load
+input clk
+input clr
+output cnt0-3
+
+@always posedge
+  cnt +1
+
+  - data selector
+# 74hc151 x 2
+input s0, s1 # input するデータの切り替え
+  # 00 = reg1, 01 = reg2, 10 = input 11 = zero
+input d0-3  # d0 = reg A out 0 d1 = reg B out 0 d1
+input d4-7  # d4 = reg A out 1 d2 = reg B out 1 d1
+
+out はひとつ？
+output out1 # reg A, B selected
+output out2 # input , zero
+
+if s0 1'b0 and s0 1'b0
+  assign out1 d0
+  ‎assign out2 d4
+繰り返し
+
+  - alu
+# 74hc283
+input a0-3 # selected reg, input and zero data
+input b0-3 # im data
+output carry
+output s0-3
+assign {carry, s0-3} = a0-3 + b0-3
+
+  - rom
+input address0-3  # reg からの jmp 用
+output opcode0-3 # address に対応する decorder input 向け
+output im0-3 # dataselector
+
+
+74hc154 で bit 選択
+
+
+  - decoder
+input rom0-3 (opcode のみ、im は rom から提供)
+input carrie
+output selector0-1, alu0-3
+
+@mov A, im
+  0011 xxxx
+  ‎110111
+@mov B, im
+  0111 xxxx
+  ‎111011
+@mov A, B
+  0001 0000
+  ‎010111
+@mov B, A
+  0100 0000
+  ‎001011
+@add A, im
+  0000 xxxx
+  ‎000111
+@add B, im
+  0101 xxxx
+  ‎011011
+@in A
+  0010 0000
+  ‎100111
+@in B
+  0110 0000
+  ‎101011
+@out im
+  1011 xxxx
+  ‎111101
+@out B
+  1001 0000
+  ‎011101
+@jmp im
+  1111 xxxx
+  ‎111110
+@jnc im if c is 0
+  1110 xxxx
+  111110
+@jnc im if c is 1
+  no input
+  xx1111
+  ‎何もしない
+
+
+  - systen global
+regA
+  input a-d = alu.outA-D
+  input load = rom
+
+# selections
+# a, b 00 regA
+    a, b 01 regB
+    a, b 10 0
+    a, b 11 gnd?
+selectorA
+ input d3, d7 = 0
+ input d0, d4 = regA.outA regA.outB
+ input d1, d5 = regB.outA regB.outB
+ input d2, d6= 1'b0
+ input d3, d7 = gnd?
+ input a, b = rom
+ 
+selectorB
+ input d3, d7 = 0
+ input d0, d4 = regA.outC regA.outD
+ input d1, d5 = regB.outC regB.outD
+ input d2, d6 = 1'b0 
+ input d3, d7 = gnd?
+ input a, b = rom
+
+alu
+ input a0, a1 = selectorA.out1 selectorA.out2
+ input a2, a3 = selectorB.out1 selectorB.out2
+ input b0-4 = rom
+
+
+reg x 4 - dataselector - alu - re
+decorder
+rom
+
+samp1
+0000 out 0000 / 10110000
+0001 add a, 0001 / 00000001
+0010 jnc 0001 / 11100001
+0011 add a, 0001 / 00000001
+0100 jnc 0011 / 11100011
+
+...
+1111 jmp 1111
+
+
+

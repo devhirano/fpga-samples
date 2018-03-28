@@ -1,0 +1,19 @@
+s0,s1 : 00=A, 01=B, input=10, zero=11
+
+operation, dst, src, opcode, data, out(s0,s1,r0,r1,r2,r3), description
+----
+// PULL DOWN
+add,  A, im, 0000, xxxx, 00 1000, A   = reg.A + rom.im
+add,  B, im, 0001, xxxx, 01 0100, B   = reg.B + rom.im
+mov,  A, im, 0010, xxxx, 11 1000, A   =     0 + rom.im
+mov,  B, im, 0011, xxxx, 11 0100, B   =     0 + rom.im
+mov,  A,  B, 0100, 0000, 01 1000, A   = reg.B + rom.0
+mov,  B,  A, 0101, 0000, 00 0100, B   = reg.A + rom.0
+ in,  A,  -, 0110, 0000, 10 1000, A   = Input + rom.0
+ in,  B,  -, 0111, 0000, 10 0100, B   = Input + rom.0
+out,  A,  -, 1000, 0000, 00 0010, out = reg.A + rom.0
+out,  B,  -, 1001, 0000, 01 0010, out = reg.B + rom.0
+out, im,  -, 1010, xxxx, 11 0010, out =     0 + rom.im
+jnc, im,  -, 1110, xxxx, 11 0001, cnt =     0 + rom.im if not carry
+jmp, im,  -, 1111, xxxx, 11 0001, cnt =     0 + rom.im
+
